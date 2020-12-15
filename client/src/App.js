@@ -1,39 +1,31 @@
-import React, { Component } from 'react';
+import React, { useState,useEffect } from 'react';
 import './App.css';
-
-class App extends Component {
-  // Initialize state
-  state = { passwords: [] }
-
-  // Fetch passwords after first mount
-  componentDidMount() {
-    this.getPasswords();
+import axios from 'axios'
+const App = () =>{
+const [password,setPassword] =useState([])
+const FetshData = async () =>{
+  try{
+    const {data} = await axios.get('/api/passwords');
+    setPassword(data)
+  } catch (err) {
+    console.log(err)
   }
-
-  getPasswords = () => {
-    // Get the passwords and store them in state
-    fetch('/api/passwords')
-      .then(res => res.json())
-      .then(passwords => this.setState({ passwords }));
-  }
-
-  render() {
-    const { passwords } = this.state;
-
-    return (
-      <div className="App">
+}
+useEffect(()=> {FetshData()},[])
+  return(
+    <div className="App">
         {/* Render the passwords if we have them */}
-        {passwords.length ? (
+        {password.length ? (
           <div>
             <h1>5 Passwords.</h1>
             <ul className="passwords">
               {/*
-                Generally it's bad to use "index" as a key.
-                It's ok for this example because there will always
+                Generally it’s bad to use "index" as a key.
+                It’s ok for this example because there will always
                 be the same number of passwords, and they never
                 change positions in the array.
               */}
-              {passwords.map((password, index) =>
+              {password.map((password, index) =>
                 <li key={index}>
                   {password}
                 </li>
@@ -41,7 +33,7 @@ class App extends Component {
             </ul>
             <button
               className="more"
-              onClick={this.getPasswords}>
+              onClick={FetshData}>
               Get More
             </button>
           </div>
@@ -51,7 +43,7 @@ class App extends Component {
             <h1>No passwords :(</h1>
             <button
               className="more"
-              onClick={this.getPasswords}>
+              onClick={FetshData}>
               Try Again?
             </button>
           </div>
@@ -59,6 +51,4 @@ class App extends Component {
       </div>
     );
   }
-}
-
 export default App;
